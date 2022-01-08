@@ -91,7 +91,54 @@ StringBuilder(效率高，线性不安全) 、 StringBuffer（效率低，线程
 
 字符流 、文件字节流
 
+## radius相关知识点
 
-
-
+```radius
+radius 存储五大类型
+String类型 哈希，list ，set ，sortSet
+string 基本指令
+radius基础的库一般有16 个
+通过使用以下命令
+select  index
+String 操作基本命令
+  set username 1   //存储单个字符串  以键值对得到形式进行存储
+  mset username 1  age 18 //批量操作存储子字符串
+  get username  //获取某个键值对的值
+  mget username age //获取多个键值
+  append username 123  //在某一个字段追加
+  incr username  // 每次增量+1
+  decr username  // 每次减量 1 
+  incrby username 10 // 每次增量 +10
+  decrby username 10 
+map 因为 只修改对象中某一个键值对的时候使用 上述操作会造成资源浪费的问题
+  可以通过哈希操作指令
+  hset testDemo username gape
+  hmset testDemo age 20 address yongji
+  hget testDemo username
+  hget testDemo username  address
+  hkeys testDemo  //获取集合中的key
+  hvals testDemo  
+list  可以进行操作未左插入和右插入
+   lpush list_demo 1 2 3 4 5 6
+   rpush list_demo2 1 2 3 4 5 6
+   lrange list_demo 0 -1  //查询全部   StartIndex endIndex 
+   lindex list_demo 1  //根据索引获取当前的 值
+   llen   list_demo  查询当前的集合长度
+set  
+	sadd setDemo a b c 
+	srem setDemo c 
+	sdiff setA setB  //取 setA中没有的setB 元素
+	sdiff setA setB   // 相反
+    sinter setA setB //取两个集合的交集
+    sunion setA setB //取并集
+    scard setA //获取当前集合下的的个数
+    set members setA // 查看当前的setA 集合中的元素
+    set ismember setA hello  //查看某元素是否存在  有为1 无为0 
+    
+    
+设置过期时间 
+  expire username 10   //设置过期时间
+  ttl username    //查看距离过期还剩的时间
+  
+```
 
