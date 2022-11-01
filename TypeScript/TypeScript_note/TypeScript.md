@@ -168,7 +168,7 @@ function getInfo(str:any):any{
 
 4.typescript 中的类
 
-```javascript
+```typescript
 ///es5 里的类
 //1.构造函数
 function Person(){
@@ -226,5 +226,70 @@ var w = new Web("赵四"，20); //原型链没法给父类传参
 function Web(name, age){
     Person.call(this.name, this.age);  //对象冒充继承，实例化子类可以给父类传参
 }
+//ts中类的定义
+class Person{
+    name: string;
+    constructor(name:string){ //构造函数 实例化对象的时候触发的方法
+        this.name = name;
+    }
+
+   run():void{
+       alert(this.name);
+   }
+   getName():string{
+       return this.name;
+   }
+   setName(name:String):void{
+       this.name = name;
+   }
+}
+var p = new Person("张三");
+p.run();
+// 2 ts中实现继承  extend ，super
+class Person{
+    public name: string;
+    constructor(name:string){ //构造函数 实例化对象的时候触发的方法
+        this.name = name;
+    }
+
+   run():string{
+       alert(`${this.name}在运动`);
+   }
+ 
+}
+//var p = new Person('王五');
+//p.run();
+
+class Web extends Person(){
+    constructor(name:string){ 
+       super(name);
+    }
+    work(){
+        alert(`${this.name}在工作`)
+    }
+}
+
+var w = new Web('李四');
+alert(w.run());
+w.work();
+//3 类里面的修饰符  tsc  属性定义的时候提供了三种修饰符
+/**
+public 在类里面 、子类、类外面都可以访问
+protected    在类里面、子类里面可以方法问，在类外部没法访问
+private   可以在类里面访问，子类和类外部都没法访问
+如果不加修饰符的话 默认public
+**/
+
+
 ```
+
+
+
+
+
+
+
+
+
+
 
