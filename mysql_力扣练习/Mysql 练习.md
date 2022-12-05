@@ -1,6 +1,8 @@
 ## Mysql 练习
 
-Day01：
+#### Day01：
+
+##### 编写一个 SQL 查询以报告 大国 的国家名称、人口和面积。
 
 World 表：这张表的每一行提供：国家名称、所属大陆、面积、人口和 GDP 值。
 
@@ -63,6 +65,8 @@ where population >= 25000000
 | student     | varchar |
 | class       | varchar |
 
+##### 筛选学生数量超过 5 的课程
+
 ```mysql
 输入: 
 Courses table:
@@ -120,6 +124,8 @@ WHERE
 | low_fats    | enum |
 | recyclable  | enum |
 
+##### 写出 SQL 语句，查找既是低脂又是可回收的产品编号。
+
 product_id 是这个表的主键。
 low_fats 是枚举类型，取值为以下两种 ('Y', 'N')，其中 'Y' 表示该产品是低脂产品，'N' 表示不是低脂产品。
 recyclable 是枚举类型，取值为以下两种 ('Y', 'N')，其中 'Y' 表示该产品可回收，而 'N' 表示不可回收
@@ -160,6 +166,8 @@ select product_id   from
 
 寻找用户推荐人
 
+##### 写一个查询语句，返回一个客户列表，列表中客户的推荐人的编号都 不是 2。
+
 | id   | name | referee_id |
 | ---- | ---- | ---------- |
 | 1    | will | null       |
@@ -191,9 +199,7 @@ select name   from customer
 
 ```
 
-
-
-从不订购的客户
+##### 从不订购的客户
 
 Customers 表
 
@@ -227,5 +233,305 @@ select  c.name as  Customers  from Customers c where
 #   left join Orders b on   b.CustomerId  = a.Id   where b.id is null
 
 
+```
+
+#### day02 :
+
+##### 计算特殊奖金
+
+| 列名        | 类型                                    |
+| ----------- | --------------------------------------- |
+| employee_id | int                                     |
+| name        | varchar                                 |
+| salary      | int                                     |
+|             | 此表的每一行给出了雇员id ，名字和薪水。 |
+
+```mysql
+写出一个SQL 查询语句，计算每个雇员的奖金。如果一个雇员的id是奇数并且他的名字不是以'M'开头，那么他的奖金是他工资的100%，否则奖金为0。
+eturn the result table ordered by employee_id.
+
+返回的结果集请按照employee_id排序。
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/calculate-special-bonus
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+输入：
+Employees 表:
++-------------+---------+--------+
+| employee_id | name    | salary |
++-------------+---------+--------+
+| 2           | Meir    | 3000   |
+| 3           | Michael | 3800   |
+| 7           | Addilyn | 7400   |
+| 8           | Juan    | 6100   |
+| 9           | Kannon  | 7700   |
++-------------+---------+--------+
+输出：
++-------------+-------+
+| employee_id | bonus |
++-------------+-------+
+| 2           | 0     |
+| 3           | 0     |
+| 7           | 7400  |
+| 8           | 0     |
+| 9           | 7700  |
++-------------+-------+
+解释：
+因为雇员id是偶数，所以雇员id 是2和8的两个雇员得到的奖金是0。
+雇员id为3的因为他的名字以'M'开头，所以，奖金是0。
+其他的雇员得到了百分之百的奖金。
+
+###题解
+
+###  奇数id   
+##  名字不是以M开头
+##    奖金为工资100%
+
+
+select a.employee_id ,IFNULL(c.salary, 0) as bonus 
+     from Employees  a 
+     left join (select b.employee_id , b.salary  
+         from  Employees b  where  b.employee_id%2 != 0 
+         and name NOT  like('M%')) c 
+         on a.employee_id = c.employee_id  order by employee_id asc
+```
+
+##### 	变更性别
+
+
+
+| id     | int     |      |
+| ------ | ------- | ---- |
+| name   | varchar |      |
+| sex    | ENUM    |      |
+| salary | int     |      |
+
+```sql
+请你编写一个 SQL 查询来交换所有的 'f' 和 'm' （即，将所有 'f' 变为 'm' ，反之亦然），仅使用 单个 update 语句 ，且不产生中间临时表。
+
+注意，你必须仅使用一条 update 语句，且 不能 使用 select 语句。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/swap-salary
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+输入：
+Salary 表：
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | m   | 2500   |
+| 2  | B    | f   | 1500   |
+| 3  | C    | m   | 5500   |
+| 4  | D    | f   | 500    |
++----+------+-----+--------+
+输出：
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | f   | 2500   |
+| 2  | B    | m   | 1500   |
+| 3  | C    | f   | 5500   |
+| 4  | D    | m   | 500    |
++----+------+-----+--------+
+
+###考察点  case when
+update salary 
+    set  sex =  case sex when 'm' then  'f' else 'm' end
+```
+
+##### 删除重复电子邮箱
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| email       | varchar |
++-------------+---------+
+id是该表的主键列。
+该表的每一行包含一封电子邮件。电子邮件将不包含大写字母。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/delete-duplicate-emails
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+输入: 
+Person 表:
++----+------------------+
+| id | email            |
++----+------------------+
+| 1  | john@example.com |
+| 2  | bob@example.com  |
+| 3  | john@example.com |
++----+------------------+
+输出: 
++----+------------------+
+| id | email            |
++----+------------------+
+| 1  | john@example.com |
+| 2  | bob@example.com  |
++----+------------------+
+解释: john@example.com重复两次。我们保留最小的Id = 1。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/delete-duplicate-emails
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+
+DELETE p1 FROM Person p1,
+    Person p2
+WHERE
+    p1.Email = p2.Email AND p1.Id > p2.Id
+
+```
+
+#### day03:
+
+##### 修复表中的名字
+
+```
+Users表
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| user_id        | int     |
+| name           | varchar |
++----------------+---------+
+user_id 是该表的主键。
+该表包含用户的 ID 和名字。名字仅由小写和大写字符组成。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/fix-names-in-a-table
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+编写一个 SQL 查询来修复名字，使得只有第一个字符是大写的，其余都是小写的。
+输入：
+Users table:
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | aLice |
+| 2       | bOB   |
++---------+-------+
+输出：
++---------+-------+
+| user_id | name  |
++---------+-------+
+| 1       | Alice |
+| 2       | Bob   |
++---------+-------+
+###考察点 contact 
+## 字段截取 left， substr ， lower，upper 函数
+
+select user_id ,
+       concat(upper(left(name,1)),lower(substr(name,2))) as name
+       from Users order by user_id;
+
+```
+
+#####  按日期分组销售产品
+
+```
++-------------+---------+
+| 列名         | 类型    |
++-------------+---------+
+| sell_date   | date    |
+| product     | varchar |
++-------------+---------+
+此表没有主键，它可能包含重复项。
+此表的每一行都包含产品名称和在市场上销售的日期。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/group-sold-products-by-the-date
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+编写一个 SQL 查询来查找每个日期、销售的不同产品的数量及其名称。
+每个日期的销售产品名称应按词典序排列。
+返回按 sell_date 排序的结果表。
+查询结果格式如下例所示。
+
+输入：
+Activities 表：
++------------+-------------+
+| sell_date  | product     |
++------------+-------------+
+| 2020-05-30 | Headphone   |
+| 2020-06-01 | Pencil      |
+| 2020-06-02 | Mask        |
+| 2020-05-30 | Basketball  |
+| 2020-06-01 | Bible       |
+| 2020-06-02 | Mask        |
+| 2020-05-30 | T-Shirt     |
++------------+-------------+
+输出：
++------------+----------+------------------------------+
+| sell_date  | num_sold | products                     |
++------------+----------+------------------------------+
+| 2020-05-30 | 3        | Basketball,Headphone,T-shirt |
+| 2020-06-01 | 2        | Bible,Pencil                 |
+| 2020-06-02 | 1        | Mask                         |
++------------+----------+------------------------------+
+解释：
+对于2020-05-30，出售的物品是 (Headphone, Basketball, T-shirt)，按词典序排列，并用逗号 ',' 分隔。
+对于2020-06-01，出售的物品是 (Pencil, Bible)，按词典序排列，并用逗号分隔。
+对于2020-06-02，出售的物品是 (Mask)，只需返回该物品名。
+
+###考察点group_concat(distinct clounmName order by  clounmName separator ',')
+select sell_date,count(distinct(product)) as num_sold ,
+       group_concat(distinct product order by product separator ',' ) as products
+       from Activities  
+       group by sell_date 
+       order by sell_date;
+```
+
+##### 患某种疾病的患者
+
+```
+患者信息表： Patients
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| patient_id   | int     |
+| patient_name | varchar |
+| conditions   | varchar |
++--------------+---------+
+patient_id （患者 ID）是该表的主键。
+'conditions' （疾病）包含 0 个或以上的疾病代码，以空格分隔。
+这个表包含医院中患者的信息。
+ 
+
+写一条 SQL 语句，查询患有 I 类糖尿病的患者 ID （patient_id）、患者姓名（patient_name）以及其患有的所有疾病代码（conditions）。I 类糖尿病的代码总是包含前缀 DIAB1 。
+
+按 任意顺序 返回结果表。
+
+查询结果格式如下示例所示。
+
+
+输入：
+Patients表：
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 1          | Daniel       | YFEV COUGH   |
+| 2          | Alice        |              |
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 |
+| 5          | Alain        | DIAB201      |
++------------+--------------+--------------+
+输出：
++------------+--------------+--------------+
+| patient_id | patient_name | conditions   |
++------------+--------------+--------------+
+| 3          | Bob          | DIAB100 MYOP |
+| 4          | George       | ACNE DIAB100 | 
++------------+--------------+--------------+
+解释：Bob 和 George 都患有代码以 DIAB1 开头的疾病
+
+###考察点  locate(substr, str)  substr 在str中是否含有  不存在就反回0
+
+select patient_id ,patient_name ,conditions   
+      from Patients where locate('DIAB1',conditions) > 0  order by patient_id 
 ```
 
