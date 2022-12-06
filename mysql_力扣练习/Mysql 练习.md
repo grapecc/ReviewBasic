@@ -529,9 +529,204 @@ Patients表：
 +------------+--------------+--------------+
 解释：Bob 和 George 都患有代码以 DIAB1 开头的疾病
 
-###考察点  locate(substr, str)  substr 在str中是否含有  不存在就反回0
+###考察点  locate(substr, str)  substr 在str中是否含有  不存在就反回0   regexp 正则匹配
 
 select patient_id ,patient_name ,conditions   
-      from Patients where locate('DIAB1',conditions) > 0  order by patient_id 
+      from Patients where conditions  regexp  '^DIAB1| DIAB1'  order by patient_id 
+```
+
+####  day04:
+
+##### 丢失信息的雇员
+
+```
+写出一个查询语句，找到所有 丢失信息 的雇员id。当满足下面一个条件时，就被认为是雇员的信息丢失：
+
+雇员的 姓名 丢失了，或者
+雇员的 薪水信息 丢失了，或者
+返回这些雇员的id  employee_id ， 从小到大排序 。
+
+
+输入：
+Employees table:
++-------------+----------+
+| employee_id | name     |
++-------------+----------+
+| 2           | Crew     |
+| 4           | Haven    |
+| 5           | Kristian |
++-------------+----------+
+Salaries table:
++-------------+--------+
+| employee_id | salary |
++-------------+--------+
+| 5           | 76071  |
+| 1           | 22517  |
+| 4           | 63539  |
++-------------+--------+
+输出：
++-------------+
+| employee_id |
++-------------+
+| 1           |
+| 2           |
++-------------+
+解释：
+雇员1，2，4，5 都工作在这个公司。
+1号雇员的姓名丢失了。
+2号雇员的薪水信息丢失了。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/employees-with-missing-information
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+### 考察点  union all 全链接 
+select  employee_id from 
+(select employee_id from Employees 
+ union all 
+ select employee_id from Salaries ) as t 
+ group by employee_id
+  having count(employee_id) =1
+order by employee_id  asc
+```
+
+ ##### 每个产品在不同商店的价格
+
+
+
+```mysql
+表 : Products
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_id  | int     |
+| store1      | int     |
+| store2      | int     |
+| store3      | int     |
++-------------+---------+
+这张表的主键是product_id（产品Id）。
+每行存储了这一产品在不同商店store1, store2, store3的价格。
+如果这一产品在商店里没有出售，则值将为null。
+
+输入：
+Products table:
++------------+--------+--------+--------+
+| product_id | store1 | store2 | store3 |
++------------+--------+--------+--------+
+| 0          | 95     | 100    | 105    |
+| 1          | 70     | null   | 80     |
++------------+--------+--------+--------+
+输出：
++------------+--------+-------+
+| product_id | store  | price |
++------------+--------+-------+
+| 0          | store1 | 95    |
+| 0          | store2 | 100   |
+| 0          | store3 | 105   |
+| 1          | store1 | 70    |
+| 1          | store3 | 80    |
++------------+--------+-------+
+解释：
+产品0在store1，store2,store3的价格分别为95,100,105。
+产品1在store1，store3的价格分别为70,80。在store2无法买到。
+
+###   行专列  考点 union all 
+select product_id , 'store1'  as store  ,store1 as  price from Products  where store1 is not null 
+union all
+select product_id , 'store2'  as store  ,store2 as  price from Products  where store2 is not null 
+union all
+select product_id , 'store3'  as store  ,store3 as  price from Products  where store3 is not null 
+```
+
+##### 树节点
+
+
+
+```mysql
+给定一个表 tree，id 是树节点的编号， p_id 是它父节点的 id 。
++----+------+
+| id | p_id |
++----+------+
+| 1  | null |
+| 2  | 1    |
+| 3  | 1    |
+| 4  | 2    |
+| 5  | 2    |
++----+------+
+
+叶子：如果这个节点没有任何孩子节点。
+根：如果这个节点是整棵树的根，即没有父节点。
+内部节点：如果这个节点既不是叶子节点也不是根节点。
+ 
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/tree-node
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
++----+------+
+| id | Type |
++----+------+
+| 1  | Root |
+| 2  | Inner|
+| 3  | Leaf |
+| 4  | Leaf |
+| 5  | Leaf |
++----+------+
+
+###根 没有父节点
+### 叶子 有父节点  id 在p_id 中没有记录
+### innner 有父节点 id 在p_id 中有记录
+
+select id , 'Root' as Type  from tree where p_id is null
+union all 
+select id , 'Inner'  as Type from tree  where id   in  (select distinct p_id from tree where p_id is not  null) 
+and p_id is not null
+union all
+select id , 'Leaf' as Type from tree  where id not  in  (select distinct  p_id from tree where p_id is not  null) 
+and p_id is not null
+```
+
+##### 第二高的薪水
+
+
+
+```
+示例1:
+输入：
+Employee 表：
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+输出：
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| 200                 |
++---------------------+
+示例2:
+输入：
+Employee 表：
++----+--------+
+| id | salary |
++----+--------+
+| 1  | 100    |
++----+--------+
+输出：
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| null                |
++---------------------+
+
+###考察点 IFNULL 函数  limit 1 OFFSET  1   DISTINCT
+
+select IFNULL(
+    (select DISTINCT salary    from Employee 
+order by salary desc limit 1 OFFSET  1),null ) as SecondHighestSalary
 ```
 
